@@ -1,1 +1,14 @@
-<p>get works!</p>
+<div class="page">
+  <h1>Status abfragen</h1>
+
+  <!-- Add Status Form -->
+  <form [formGroup]="getStatusForm" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>Benutzer</mat-label>
+      <input formControlName="user" type="text" matInput>
+      <mat-error>Eingabe ist verpflichtend</mat-error>
+    </mat-form-field>
+
+    <button class="get-btn" color="primary" mat-flat-button>Abfragen</button>
+  </form>
+</div>
