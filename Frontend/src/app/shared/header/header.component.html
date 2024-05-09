@@ -1,0 +1,18 @@
+<mat-toolbar color="primary">
+  <!-- Menu Button -->
+  <button class="menu-btn" mat-icon-button (click)="onToggleSidenav()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <!-- Home Link -->
+  <div>
+    <a routerLink="/">Home</a>
+  </div>
+
+  <span class="spacer"></span>
+
+  <!-- App Title -->
+  <div>
+    <h2>{{ title }}</h2>
+  </div>
+</mat-toolbar>
