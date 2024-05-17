@@ -7,11 +7,8 @@ import {HttpClient} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {StatusDto} from "../../shared/dtos/status.dto";
 import {firstValueFrom} from "rxjs";
-import * as _moment from 'moment';
-// tslint:disable-next-line:no-duplicate-imports
-import {default as _rollupMoment} from 'moment';
+import {environment} from "../../../environments/environment";
 
-const moment = _rollupMoment || _moment;
 
 @Component({
   selector: 'app-status-delete',
@@ -33,8 +30,7 @@ export class StatusDeletePage {
   private snackBar = inject(MatSnackBar);
 
   protected deleteStatusForm = this.fb.group({
-    user: ['', Validators.required],
-    status: ['', Validators.required],
+    user: ['', Validators.required]
   });
 
   protected onSubmit() {
@@ -43,16 +39,13 @@ export class StatusDeletePage {
     }
 
     const status: StatusDto = {
-      username: this.deleteStatusForm.value.user ?? '',
-      statustext: this.deleteStatusForm.value.status ?? '',
-      uhrzeit: moment().toString()
+      username: this.deleteStatusForm.value.user ?? ''
     }
 
-    // TODO: change URL
-    firstValueFrom(this.http.post('http://localhost:3000/status', status)).then(() => {
-      this.snackBar.open('Status wurde erfolgreich gelöscht');
+    firstValueFrom(this.http.delete(environment.apiUrl + `statuses/${status.username}`)).then(() => {
+      this.snackBar.open('Status wurde erfolgreich gelöscht', 'Schließen');
     }).catch(() => {
-      this.snackBar.open('Fehler beim Löschen des Status')
+      this.snackBar.open('Fehler beim Löschen des Status', 'Schließen')
     });
   }
 }
