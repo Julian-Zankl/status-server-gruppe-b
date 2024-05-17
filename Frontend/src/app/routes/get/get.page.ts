@@ -3,15 +3,11 @@ import {MatButton} from "@angular/material/button";
 import {MatError, MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
-import * as _moment from 'moment';
-// tslint:disable-next-line:no-duplicate-imports
-import {default as _rollupMoment} from 'moment';
 import {HttpClient} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {StatusDto} from "../../shared/dtos/status.dto";
 import {firstValueFrom} from "rxjs";
-
-const moment = _rollupMoment || _moment;
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-status-get',
@@ -33,8 +29,7 @@ export class StatusGetPage {
   private snackBar = inject(MatSnackBar);
 
   protected getStatusForm = this.fb.group({
-    user: ['', Validators.required],
-    status: ['', Validators.required],
+    user: ['', Validators.required]
   });
 
   protected onSubmit() {
@@ -46,11 +41,10 @@ export class StatusGetPage {
       username: this.getStatusForm.value.user ?? '',
     }
 
-    // TODO: change URL
-    firstValueFrom(this.http.post<StatusDto>('http://localhost:3000/status', status)).then((res: StatusDto) => {
-      this.snackBar.open('Status wurde erfolgreich abgefragt');
+    firstValueFrom(this.http.get<StatusDto>(environment.apiUrl + `statuses/${status.username}`)).then((res: StatusDto) => {
+      this.snackBar.open('Status wurde erfolgreich abgefragt', 'Schließen');
     }).catch(() => {
-      this.snackBar.open('Fehler beim Abfragen des Status')
+      this.snackBar.open('Fehler beim Abfragen des Status', 'Schließen')
     });
     }
 }
