@@ -1,0 +1,14 @@
+<div class="page">
+  <h1>Status löschen</h1>
+
+  <!-- Add Status Form -->
+  <form [formGroup]="deleteStatusForm" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>Benutzer</mat-label>
+      <input formControlName="user" type="text" matInput>
+      <mat-error>Eingabe ist verpflichtend</mat-error>
+    </mat-form-field>
+
+    <button class="delete-btn" color="primary" mat-flat-button>Löschen</button>
+  </form>
+</div>
