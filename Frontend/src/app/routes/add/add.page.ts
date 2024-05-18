@@ -10,7 +10,6 @@ import {HttpClient} from "@angular/common/http";
 import {StatusDto} from "../../shared/dtos/status.dto";
 import {firstValueFrom} from "rxjs";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {environment} from "../../../environments/environment";
 
 const moment = _rollupMoment || _moment;
 
@@ -49,8 +48,7 @@ export class StatusAddPage {
       uhrzeit: moment().toString()
     }
 
-    // TODO: change URL
-    firstValueFrom(this.http.post(environment.apiUrl + 'statuses', status)).then(() => {
+    firstValueFrom(this.http.post('/api/statuses', status)).then(() => {
       this.snackBar.open('Status wurde erfolgreich hinzugefügt', 'Schließen');
     }).catch(() => {
       this.snackBar.open('Fehler beim Hinzufügen des Status', 'Schließen')

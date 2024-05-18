@@ -10,7 +10,6 @@ import {firstValueFrom} from "rxjs";
 import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
 import {default as _rollupMoment} from 'moment';
-import {environment} from "../../../environments/environment";
 
 const moment = _rollupMoment || _moment;
 
@@ -49,7 +48,7 @@ export class StatusUpdatePage {
       uhrzeit: moment().toString()
     }
 
-    firstValueFrom(this.http.put(environment.apiUrl + `statuses/${status.username}`, status)).then(() => {
+    firstValueFrom(this.http.put(`/api/statuses/${status.username}`, status)).then(() => {
       this.snackBar.open('Status wurde erfolgreich geändert', 'Schließen');
     }).catch(() => {
       this.snackBar.open('Fehler bei der Änderung des Status', 'Schließen')

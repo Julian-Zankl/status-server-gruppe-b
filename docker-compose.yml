@@ -1,22 +1,17 @@
-version: '3'
 services:
   status-server:
     image: status-server
     ports:
-      - "8080:8080"
+      - "8080:80"
     build:
       context: ./Backend
-      dockerfile: ./Dockerfile
 
   status-client:
     image: status-client
     ports:
-      - "4200:4200"
+      - "4200:80"
     depends_on:
       status-server:
         condition: service_started
-    environment:
-      - status-server.route=status-server:8080
     build:
       context: ./Frontend
-      dockerfile: ./Dockerfile

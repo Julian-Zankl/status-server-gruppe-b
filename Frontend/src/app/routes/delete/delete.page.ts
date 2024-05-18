@@ -7,7 +7,6 @@ import {HttpClient} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {StatusDto} from "../../shared/dtos/status.dto";
 import {firstValueFrom} from "rxjs";
-import {environment} from "../../../environments/environment";
 
 
 @Component({
@@ -42,7 +41,7 @@ export class StatusDeletePage {
       username: this.deleteStatusForm.value.user ?? ''
     }
 
-    firstValueFrom(this.http.delete(environment.apiUrl + `statuses/${status.username}`)).then(() => {
+    firstValueFrom(this.http.delete(`/api/statuses/${status.username}`)).then(() => {
       this.snackBar.open('Status wurde erfolgreich gelöscht', 'Schließen');
     }).catch(() => {
       this.snackBar.open('Fehler beim Löschen des Status', 'Schließen')

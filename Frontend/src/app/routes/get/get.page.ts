@@ -7,7 +7,6 @@ import {HttpClient} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {StatusDto} from "../../shared/dtos/status.dto";
 import {firstValueFrom} from "rxjs";
-import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-status-get',
@@ -41,7 +40,7 @@ export class StatusGetPage {
       username: this.getStatusForm.value.user ?? '',
     }
 
-    firstValueFrom(this.http.get<StatusDto>(environment.apiUrl + `statuses/${status.username}`)).then((res: StatusDto) => {
+    firstValueFrom(this.http.get<StatusDto>(`/api/statuses/${status.username}`)).then((res: StatusDto) => {
       this.snackBar.open('Status wurde erfolgreich abgefragt', 'Schließen');
     }).catch(() => {
       this.snackBar.open('Fehler beim Abfragen des Status', 'Schließen')

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping(path = "/api")
 public class StatusController {
 
     // Define Endpoints as CRUD Functionalities
