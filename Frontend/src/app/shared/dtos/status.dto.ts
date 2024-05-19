@@ -1,6 +1,6 @@
 export interface StatusDto {
   username: string;
-  statustext?: string;
+  statusText?: string;
   // TODO: check type
-  uhrzeit?: string;
+  time?: string;
 }

@@ -44,8 +44,8 @@ export class StatusAddPage {
 
     const status: StatusDto = {
       username: this.addStatusForm.value.user ?? '',
-      statustext: this.addStatusForm.value.status ?? '',
-      uhrzeit: moment().toString()
+      statusText: this.addStatusForm.value.status ?? '',
+      time: moment().toString()
     }
 
     firstValueFrom(this.http.post('/api/statuses', status)).then(() => {
