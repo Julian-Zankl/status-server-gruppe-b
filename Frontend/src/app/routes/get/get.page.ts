@@ -41,7 +41,7 @@ export class StatusGetPage {
     }
 
     firstValueFrom(this.http.get<StatusDto>(`/api/statuses/${status.username}`)).then((res: StatusDto) => {
-      this.snackBar.open('Status wurde erfolgreich abgefragt', 'Schließen');
+      this.snackBar.open(`${res.username} - ${res.statusText} - ${res.time}`, 'Schließen');
     }).catch(() => {
       this.snackBar.open('Fehler beim Abfragen des Status', 'Schließen')
     });
