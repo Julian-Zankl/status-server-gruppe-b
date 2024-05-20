@@ -2,7 +2,7 @@ services:
   status-server:
     image: status-server
     ports:
-      - "8080:81"
+      - "8080:8080"
     build:
       context: ./Backend
 

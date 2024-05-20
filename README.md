@@ -24,5 +24,6 @@ Port: `8080`
 
 ## Start der Applikation
 
-Mittels `docker-compose up` können beide Projekte als Docker Container gebaut und ausgeführt werden.
+Mittels `docker-compose up` können beide Projekte als Docker Container ausgeführt werden.
 So wird für beide Applikationen jeweils ein Docker Container erstellt, die miteinander kommunizieren können.
+Sollen die Docker Images neu gebaut werden muss man `docker-compose up --build` verwenden.
