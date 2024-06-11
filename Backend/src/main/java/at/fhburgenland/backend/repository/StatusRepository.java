@@ -4,7 +4,6 @@ import at.fhburgenland.backend.Status;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class StatusRepository {
         if (!statuses.contains(status)) {
             statuses.add(status);
             System.out.println("Created status with username " + status.getUsername());
-            return statuses.getLast();
+            return statuses.get(statuses.size() - 1); // Verwende get(size() - 1) anstelle von getLast()
         }
         System.out.println("State does already exist!");
         return null;
@@ -51,8 +50,9 @@ public class StatusRepository {
                 }
             }
             System.out.println("No status with name " + username);
+        } else {
+            System.out.println("There are no statuses available");
         }
-        System.out.println("There are no statuses available");
         return null;
     }
 
@@ -64,10 +64,11 @@ public class StatusRepository {
     public List<Status> getStatuses() {
         if (!statuses.isEmpty()) {
             System.out.println("Statuses available");
-            return statuses;
+            return new ArrayList<>(statuses);
+        } else {
+            System.out.println("There are no statuses available!");
+            return new ArrayList<>();
         }
-        System.out.println("There are no statuses available!");
-        return null;
     }
 
     /**
@@ -86,8 +87,9 @@ public class StatusRepository {
                 }
             }
             System.out.println("No status with name " + username);
+        } else {
+            System.out.println("There are no statuses available!");
         }
-        System.out.println("There are no statuses available!");
         return null;
     }
 
@@ -98,15 +100,8 @@ public class StatusRepository {
      */
     public void deleteStatus(String username) {
         if (!statuses.isEmpty()) {
-            for (Status status : statuses) {
-                if (status.getUsername().equals(username)) {
-                    statuses.remove(status);
-                    System.out.println("Deleted status with username " + status.getUsername());
-                    return;
-                } else {
-                    System.out.println("Status does not exist!");
-                }
-            }
+            statuses.removeIf(status -> status.getUsername().equals(username));
+            System.out.println("Deleted status with username " + username);
         } else {
             System.out.println("There are no statuses available!");
         }
