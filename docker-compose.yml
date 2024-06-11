@@ -9,6 +9,11 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   status-server:
     build:
@@ -20,21 +25,23 @@ services:
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: 5672
     depends_on:
-      - rabbitmq
-    networks:
-      - app-network
-
-  status-client:
-    build:
-      context: ./Frontend
-      dockerfile: Dockerfile
-    ports:
-      - "4200:80"
-    depends_on:
-      status-server:
+      rabbitmq:
         condition: service_healthy
     networks:
       - app-network
+
+# Uncomment the following lines when the Dockerfile for the frontend is ready
+#  status-client:
+#    build:
+#      context: ./Frontend
+#      dockerfile: Dockerfile
+#    ports:
+#      - "4200:80"
+#    depends_on:
+#      status-server:
+#        condition: service_healthy
+#    networks:
+#      - app-network
 
 networks:
   app-network:
