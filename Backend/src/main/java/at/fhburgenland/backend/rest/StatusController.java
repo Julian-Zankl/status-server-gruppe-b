@@ -2,6 +2,7 @@ package at.fhburgenland.backend.rest;
 
 import at.fhburgenland.backend.Status;
 import at.fhburgenland.backend.service.StatusService;
+import at.fhburgenland.backend.service.StatusUpdateSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,66 +10,51 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/statuses")
 public class StatusController {
 
-    // Define Endpoints as CRUD Functionalities
     private final StatusService statusService;
+    private final StatusUpdateSender statusUpdateSender;
 
     @Autowired
-    public StatusController(StatusService statusService) {
+    public StatusController(StatusService statusService, StatusUpdateSender statusUpdateSender) {
         this.statusService = statusService;
+        this.statusUpdateSender = statusUpdateSender;
     }
 
-    /**
-     * Create new status
-     * @param status Status to be created
-     * @return Response with status code 200 and created status
-     */
-    @PostMapping(path = "/statuses")
+    @PostMapping
     public ResponseEntity<Status> createStatus(@RequestBody Status status) {
-        return ResponseEntity.ok(this.statusService.createStatus(status));
+        Status createdStatus = this.statusService.createStatus(status);
+        statusUpdateSender.sendCreateStatusUpdate(createdStatus);
+        return ResponseEntity.ok(createdStatus);
     }
 
-    /**
-     * Get one specific status
-     * @param username Access-ID of corresponding status
-     * @return Response with status code 200 and retrieved status
-     */
-    @GetMapping(path = "/statuses/{username}")
+    @GetMapping("/{username}")
     public ResponseEntity<Status> getStatusByName(@PathVariable String username) {
-        return ResponseEntity.ok(this.statusService.getStatusByName(username));
+        Status status = this.statusService.getStatusByName(username);
+        statusUpdateSender.sendReadStatusUpdate(status);
+        return ResponseEntity.ok(status);
     }
 
-    /**
-     * Get all statuses
-     * @return Response with status code 200 and a list of all statuses
-     */
-    @GetMapping(path = "/statuses")
+    @GetMapping
     public ResponseEntity<List<Status>> getAllStatuses() {
-        return ResponseEntity.ok(this.statusService.getAllStatuses());
+        List<Status> statuses = this.statusService.getAllStatuses();
+        statuses.forEach(statusUpdateSender::sendReadStatusUpdate);
+        return ResponseEntity.ok(statuses);
     }
 
-    /**
-     * Update existing status
-     * @param status Status to be updated
-     * @return Response with status code 200 and updated status
-     */
-    @PutMapping(path = "/statuses/{username}")
+    @PutMapping("/{username}")
     public ResponseEntity<Status> updateStatus(@RequestBody Status status, @PathVariable String username) {
-        return ResponseEntity.ok(this.statusService.updateStatus(status, username));
+        Status updatedStatus = this.statusService.updateStatus(status, username);
+        statusUpdateSender.sendUpdateStatusUpdate(updatedStatus);
+        return ResponseEntity.ok(updatedStatus);
     }
 
-    /**
-     * Delete existing status
-     * @param username Access-ID of corresponding status
-     * @return Response with status code 204 and no content
-     */
-    @DeleteMapping(path = "/statuses/{username}")
+    @DeleteMapping("/{username}")
     public ResponseEntity<?> deleteStatus(@PathVariable String username) {
         this.statusService.deleteStatus(username);
+        Status deletedStatus = new Status(username, null, null); // Status-Objekt mit nur dem Benutzernamen erstellen
+        statusUpdateSender.sendDeleteStatusUpdate(deletedStatus);
         return ResponseEntity.noContent().build();
     }
-
-
 }
