@@ -1,9 +1,16 @@
 server:
   port: 8089
 
+rabbitmq:
+  route: localhost
+
 spring:
   application:
     name: api
+  rabbitmq:
+    host: http://${rabbitmq.route}
+    password: pw
+    username: user
 
 service-registry:
   route: localhost:8761

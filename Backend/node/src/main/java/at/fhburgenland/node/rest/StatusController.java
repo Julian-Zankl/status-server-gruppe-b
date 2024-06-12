@@ -1,6 +1,8 @@
 package at.fhburgenland.node.rest;
 
 import at.fhburgenland.node.Status;
+import at.fhburgenland.node.StatusMessage;
+import at.fhburgenland.node.service.MessageSenderService;
 import at.fhburgenland.node.service.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,13 +12,13 @@ import java.util.List;
 
 @RestController
 public class StatusController {
-
-    // Define Endpoints as CRUD Functionalities
     private final StatusService statusService;
+    private final MessageSenderService messageSenderService;
 
     @Autowired
-    public StatusController(StatusService statusService) {
+    public StatusController(StatusService statusService, MessageSenderService messageSenderService) {
         this.statusService = statusService;
+        this.messageSenderService = messageSenderService;
     }
 
     /**
@@ -26,7 +28,9 @@ public class StatusController {
      */
     @PostMapping(path = "/statuses")
     public ResponseEntity<Status> createStatus(@RequestBody Status status) {
-        return ResponseEntity.ok(this.statusService.createStatus(status));
+        Status saved = this.statusService.createStatus(status);
+        messageSenderService.sendMessage("CREATE", saved);
+        return ResponseEntity.ok(saved);
     }
 
     /**
@@ -55,7 +59,9 @@ public class StatusController {
      */
     @PutMapping(path = "/statuses/{username}")
     public ResponseEntity<Status> updateStatus(@RequestBody Status status, @PathVariable String username) {
-        return ResponseEntity.ok(this.statusService.updateStatus(status, username));
+        Status updated = this.statusService.updateStatus(status, username);
+        messageSenderService.sendMessage("UPDATE", updated);
+        return ResponseEntity.ok(updated);
     }
 
     /**
@@ -65,7 +71,10 @@ public class StatusController {
      */
     @DeleteMapping(path = "/statuses/{username}")
     public ResponseEntity<?> deleteStatus(@PathVariable String username) {
+        Status toDelete = new Status();
+        toDelete.setUsername(username);
         this.statusService.deleteStatus(username);
+        this.messageSenderService.sendMessage("DELETE", toDelete);
         return ResponseEntity.noContent().build();
     }
 

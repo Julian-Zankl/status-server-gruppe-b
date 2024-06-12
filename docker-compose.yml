@@ -27,9 +27,12 @@ services:
     image: node
     environment:
       - service-registry.route=service-registry:8761
+      - rabbitmq.route=rabbitmq
     depends_on:
       service-registry:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
     build:
       context: ./Backend/node
       dockerfile: ./Dockerfile
@@ -43,3 +46,12 @@ services:
         condition: service_started
     build:
       context: ./Frontend
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672" # management
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=pw
