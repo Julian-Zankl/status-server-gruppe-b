@@ -7,10 +7,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service for status operations (CRUD)
+ */
 @Service
 public class StatusService {
     private final StatusRepository statusRepository;
 
+    /**
+     * Constructor
+     * @param statusRepository Repository for status operations
+     */
     @Autowired
     public StatusService(StatusRepository statusRepository) {
         this.statusRepository = statusRepository;

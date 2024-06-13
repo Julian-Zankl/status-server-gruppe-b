@@ -10,11 +10,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Status controller for handling status requests.
+ */
 @RestController
 public class StatusController {
     private final StatusService statusService;
     private final MessageSenderService messageSenderService;
 
+    /**
+     * Constructor
+     * @param statusService Status service
+     * @param messageSenderService Message sender service
+     */
     @Autowired
     public StatusController(StatusService statusService, MessageSenderService messageSenderService) {
         this.statusService = statusService;
@@ -77,6 +85,5 @@ public class StatusController {
         this.messageSenderService.sendMessage("DELETE", toDelete);
         return ResponseEntity.noContent().build();
     }
-
 
 }
