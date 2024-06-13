@@ -1,7 +1,6 @@
 package at.fhburgenland.node.rest;
 
 import at.fhburgenland.node.Status;
-import at.fhburgenland.node.StatusMessage;
 import at.fhburgenland.node.service.MessageSenderService;
 import at.fhburgenland.node.service.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
