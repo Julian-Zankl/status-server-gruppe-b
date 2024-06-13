@@ -2,6 +2,7 @@ package at.fhburgenland.node.service;
 
 import at.fhburgenland.node.StatusMessage;
 import com.rabbitmq.client.Channel;
+import lombok.Getter;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Component
 public class MessageReceiverService implements ChannelAwareMessageListener {
     private final StatusService statusService;
+    @Getter
     private final String nodeId = UUID.randomUUID().toString();
     private final MessageConverter converter;
 
@@ -39,7 +41,6 @@ public class MessageReceiverService implements ChannelAwareMessageListener {
 
         if (channel != null) {
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-            System.out.println(message.getMessageProperties().getDeliveryTag());
         }
 
         StatusMessage received = (StatusMessage) converter.fromMessage(message);
@@ -54,11 +55,4 @@ public class MessageReceiverService implements ChannelAwareMessageListener {
         }
     }
 
-    /**
-     * Get node id
-     * @return Node id
-     */
-    public String getNodeId() {
-        return nodeId;
-    }
 }

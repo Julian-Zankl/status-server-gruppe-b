@@ -61,6 +61,8 @@ public class RabbitMQConfig {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory(url);
         connectionFactory.setUsername("user");
         connectionFactory.setPassword("pw");
+        connectionFactory.setPublisherReturns(true);
+        connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
         return connectionFactory;
     }
 
@@ -100,6 +102,8 @@ public class RabbitMQConfig {
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(messageConverter);
+        template.setMandatory(true);
+
         return template;
     }
 }
