@@ -8,6 +8,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Status class. It is used in the StatusMessage class to represent a complete status message.
+ */
 @Getter
 @Setter
 @AllArgsConstructor @NoArgsConstructor

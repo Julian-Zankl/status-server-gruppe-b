@@ -7,10 +7,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository for status. This class is used to manage the status data.
+ */
 @Repository
 public class StatusRepository {
     private final List<Status> statuses = new ArrayList<>();
 
+    /**
+     * Constructor to create some initial statuses
+     */
     public StatusRepository() {
         this.statuses.add(new Status("Max", "idle", LocalDateTime.now().minusHours(1)));
         this.statuses.add(new Status("Julian", "idle", LocalDateTime.now().minusHours(3)));
@@ -21,7 +27,6 @@ public class StatusRepository {
 
     /**
      * Create new status
-     *
      * @param status Status to be created
      * @return Created status
      */
@@ -37,7 +42,6 @@ public class StatusRepository {
 
     /**
      * Get one specific status
-     *
      * @param username Access-ID of corresponding status
      * @return Retrieved status
      */
@@ -57,7 +61,6 @@ public class StatusRepository {
 
     /**
      * Get all statuses
-     *
      * @return List of all statuses
      */
     public List<Status> getStatuses() {
@@ -71,7 +74,6 @@ public class StatusRepository {
 
     /**
      * Update existing status
-     *
      * @param status Status to be updated
      * @return Updated status
      */
@@ -92,7 +94,6 @@ public class StatusRepository {
 
     /**
      * Delete existing status
-     *
      * @param username Access-ID of corresponding status
      */
     public void deleteStatus(String username) {
