@@ -49,6 +49,7 @@ export class StatusUpdatePage {
     }
 
     firstValueFrom(this.http.put(`/api/statuses/${status.username}`, status)).then(() => {
+      console.log(status)
       this.snackBar.open('Status wurde erfolgreich geändert', 'Schließen');
     }).catch(() => {
       this.snackBar.open('Fehler bei der Änderung des Status', 'Schließen')
