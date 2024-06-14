@@ -37,18 +37,25 @@ public class MessageSenderService {
      * @param status Status to be sent
      */
     public void sendMessage(String operation, Status status) {
-        CorrelationData crd = new CorrelationData();
-        StatusMessage message = new StatusMessage(messageReceiverService.getNodeId(), operation, status);
-        rabbitTemplate.convertAndSend("status_exchange", "", message, crd);
-        try {
-            CorrelationData.Confirm confirm = crd.getFuture().get(10, TimeUnit.SECONDS);
-            if(confirm.isAck()) {
-                System.out.println("RabbitMQ acknowledged the message");
-            } else {
-                System.out.println("RabbitMQ negatively acknowledged the message");
+        int delay = 10;
+
+        for(int i = 0; i < 3; i++) {
+            CorrelationData crd = new CorrelationData();
+            StatusMessage message = new StatusMessage(messageReceiverService.getNodeId(), operation, status);
+            rabbitTemplate.convertAndSend("status_exchange", "", message, crd);
+            try {
+                CorrelationData.Confirm confirm = crd.getFuture().get(delay, TimeUnit.SECONDS);
+                if(confirm.isAck()) {
+                    System.out.println("RabbitMQ acknowledged the message");
+                } else {
+                    System.out.println("RabbitMQ negatively acknowledged the message");
+                }
+                return;
+            } catch (TimeoutException | InterruptedException | ExecutionException e) {
+                System.out.println("RabbitMQ didn't respond to the message");
+                delay *= 2;
             }
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            System.out.println("RabbitMQ didn't respond to the message");
         }
+        System.out.println("RabbitMQ didn't respond to all the retries - check the availability of the service");
     }
 }
