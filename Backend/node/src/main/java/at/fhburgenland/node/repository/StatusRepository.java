@@ -1,6 +1,8 @@
 package at.fhburgenland.node.repository;
 
 import at.fhburgenland.node.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ import java.util.List;
 @Repository
 public class StatusRepository {
     private final List<Status> statuses = new ArrayList<>();
+    private static final Logger logger = LoggerFactory.getLogger(StatusRepository.class);
 
     /**
      * Constructor to create some initial statuses
@@ -33,10 +36,10 @@ public class StatusRepository {
     public Status createStatus(Status status) {
         if (!statuses.contains(status)) {
             statuses.add(status);
-            System.out.println("Created status with username " + status.getUsername());
+            logger.info("Created status with username {}", status.getUsername());
             return statuses.getLast();
         }
-        System.out.println("State does already exist!");
+        logger.info("State does already exist!");
         return null;
     }
 
@@ -49,13 +52,13 @@ public class StatusRepository {
         if (!statuses.isEmpty()) {
             for (Status status : statuses) {
                 if (status.getUsername().equals(username)) {
-                    System.out.println("Found status with name " + status.getUsername());
+                    logger.info("Found status with name {}", status.getUsername());
                     return status;
                 }
             }
-            System.out.println("No status with name " + username);
+            logger.info("Could not get by name - no status with name {}", username);
         }
-        System.out.println("There are no statuses available");
+        logger.info("There are no statuses available");
         return null;
     }
 
@@ -65,10 +68,10 @@ public class StatusRepository {
      */
     public List<Status> getStatuses() {
         if (!statuses.isEmpty()) {
-            System.out.println("Statuses available");
+            logger.info("Statuses available");
             return statuses;
         }
-        System.out.println("There are no statuses available!");
+        logger.info("Could not get statuses - there are no statuses available!");
         return null;
     }
 
@@ -82,13 +85,13 @@ public class StatusRepository {
             for (int i = 0; i < statuses.size(); i++) {
                 if (statuses.get(i).getUsername().equals(username)) {
                     statuses.set(i, status);
-                    System.out.println("Updated status with username " + status.getUsername());
+                    logger.info("Updated status with username " + status.getUsername());
                     return statuses.get(i);
                 }
             }
-            System.out.println("No status with name " + username);
+            logger.info("Could not update status - no status with name {}", username);
         }
-        System.out.println("There are no statuses available!");
+        logger.info("Could not update status - there are no statuses available!");
         return null;
     }
 
@@ -101,14 +104,14 @@ public class StatusRepository {
             for (Status status : statuses) {
                 if (status.getUsername().equals(username)) {
                     statuses.remove(status);
-                    System.out.println("Deleted status with username " + status.getUsername());
+                    logger.info("Deleted status with username {}", status.getUsername());
                     return;
                 } else {
-                    System.out.println("Status does not exist!");
+                    logger.info("Could not delete status - status does not exist!");
                 }
             }
         } else {
-            System.out.println("There are no statuses available!");
+            logger.info("Could not delete status - there are no statuses available!");
         }
     }
 }

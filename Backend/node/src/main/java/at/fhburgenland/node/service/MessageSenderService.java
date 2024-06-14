@@ -2,6 +2,8 @@ package at.fhburgenland.node.service;
 
 import at.fhburgenland.node.Status;
 import at.fhburgenland.node.StatusMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 public class MessageSenderService {
     private final RabbitTemplate rabbitTemplate;
     private final MessageReceiverService messageReceiverService;
+    private static final Logger logger = LoggerFactory.getLogger(MessageSenderService.class);
 
     /**
      * Constructor
@@ -46,16 +49,16 @@ public class MessageSenderService {
             try {
                 CorrelationData.Confirm confirm = crd.getFuture().get(delay, TimeUnit.SECONDS);
                 if(confirm.isAck()) {
-                    System.out.println("RabbitMQ acknowledged the message");
+                    logger.info("RabbitMQ acknowledged the message");
                 } else {
-                    System.out.println("RabbitMQ negatively acknowledged the message");
+                    logger.info("RabbitMQ negatively acknowledged the message");
                 }
                 return;
             } catch (TimeoutException | InterruptedException | ExecutionException e) {
-                System.out.println("RabbitMQ didn't respond to the message");
+                logger.info("RabbitMQ didn't respond to the message");
                 delay *= 2;
             }
         }
-        System.out.println("RabbitMQ didn't respond to all the retries - check the availability of the service");
+        logger.info("RabbitMQ didn't respond to all the retries - check the availability of the service");
     }
 }
