@@ -32,9 +32,10 @@ public class StatusRepository {
      * @return Created or updated status
      */
     public Status createStatus(Status status) {
+        // Optional<Status> is used to avoid explicit null checks
         Optional<Status> existingStatus = findStatusByUsername(status.getUsername());
         if (existingStatus.isPresent()) {
-            // Check if incoming status is more recent
+            // check if incoming status is more recent
             if (status.getTime().isAfter(existingStatus.get().getTime())) {
                 statuses.remove(existingStatus.get());
                 statuses.add(status);
@@ -43,7 +44,7 @@ public class StatusRepository {
                 System.out.println("Ignored older or same time update for " + status.getUsername());
             }
         } else {
-            // Simply add new status if it doesn't exist yet
+            // simply add new status if it doesn't exist yet
             statuses.add(status);
             System.out.println("Created new status for " + status.getUsername());
         }
@@ -56,7 +57,16 @@ public class StatusRepository {
      * @return Status object or null if not found
      */
     public Status getStatusByName(String username) {
-        return findStatusByUsername(username).orElse(null);
+        Optional<Status> status = findStatusByUsername(username);
+        if (status.isPresent()) {
+            // if the Optional contains a Status
+            System.out.println("Found status for username " + username);
+            return status.get();
+        } else {
+            // if the Optional is empty
+            System.out.println("Status not found for username " + username);
+            return null;
+        }
     }
 
     /**
@@ -64,16 +74,21 @@ public class StatusRepository {
      * @return List of all statuses
      */
     public List<Status> getStatuses() {
-        return new ArrayList<>(statuses);
+        if (!this.statuses.isEmpty()) {
+            System.out.println("Statuses available");
+            return this.statuses;
+        }
+        System.out.println("There are no statuses available!");
+        return null;
     }
 
     /**
-     * Update status for a given username
+     * Update status for a given status
      * @param status Status to update
      * @return Updated status
      */
     public Status updateStatus(Status status) {
-        return createStatus(status);  // Redirect update requests through createStatus() to leverage the LWW logic
+        return createStatus(status);  // redirect update requests through createStatus() to leverage the LWW logic
     }
 
     /**
@@ -91,11 +106,9 @@ public class StatusRepository {
      * @param username Username to search for
      * @return Most recent status or empty Optional if not found
      */
-    private Optional<Status> findStatusByUsername(String username) { // Optional<Status> is used to avoid explicit null checks
+    private Optional<Status> findStatusByUsername(String username) {
+        // iterate over all statuses and filter by username
         return statuses.stream()
-                // iterate over all statuses and filter by username
-                .filter(s -> s.getUsername().equals(username))
-                // Comparator orders `Status` objects by their `time` field, max() returns the most recent object
-                .max(Comparator.comparing(Status::getTime));
+                .filter(s -> s.getUsername().equals(username)).findFirst();
     }
 }
