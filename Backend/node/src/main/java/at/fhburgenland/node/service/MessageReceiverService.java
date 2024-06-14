@@ -3,8 +3,7 @@ package at.fhburgenland.node.service;
 import at.fhburgenland.node.StatusMessage;
 import com.rabbitmq.client.Channel;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -16,13 +15,13 @@ import java.util.UUID;
 /**
  * Service for receiving messages from other instances
  */
+@Slf4j
 @Component
 public class MessageReceiverService implements ChannelAwareMessageListener {
     private final StatusService statusService;
     @Getter
     private final String nodeId = UUID.randomUUID().toString();
     private final MessageConverter converter;
-    private static final Logger logger = LoggerFactory.getLogger(MessageReceiverService.class);
 
     /**
      * Constructor
@@ -40,7 +39,7 @@ public class MessageReceiverService implements ChannelAwareMessageListener {
      */
     @Override
     public void onMessage(Message message, Channel channel) throws Exception {
-        logger.info("received message");
+        log.info("received message");
 
         if (channel != null) {
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);

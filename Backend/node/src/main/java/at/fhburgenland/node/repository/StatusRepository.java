@@ -1,11 +1,9 @@
 package at.fhburgenland.node.repository;
 
 import at.fhburgenland.node.Status;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,21 +11,10 @@ import java.util.Optional;
 /**
  * Repository for status operations (CRUD)
  */
+@Slf4j
 @Repository
 public class StatusRepository {
     private final List<Status> statuses = new ArrayList<>();
-    private static final Logger logger = LoggerFactory.getLogger(StatusRepository.class);
-
-    /**
-     * Constructor to initialize some dummy data.
-     */
-    public StatusRepository() {
-        this.statuses.add(new Status("Max", "idle", LocalDateTime.now().minusHours(1)));
-        this.statuses.add(new Status("Julian", "idle", LocalDateTime.now().minusHours(3)));
-        this.statuses.add(new Status("Niklas", "active", LocalDateTime.now().minusHours(2)));
-        this.statuses.add(new Status("Markus", "shutdown", LocalDateTime.now().minusHours(4)));
-        this.statuses.add(new Status("Marco", "inactive", LocalDateTime.now().minusHours(50)));
-    }
 
     /**
      * Create new status or update existing status if more recent
@@ -42,16 +29,16 @@ public class StatusRepository {
             if (status.getTime().isAfter(existingStatus.get().getTime())) {
                 statuses.remove(existingStatus.get());
                 statuses.add(status);
-                logger.info("Updated status with more recent data for " + status.getUsername());
+                log.info("Updated status with more recent data for " + status.getUsername());
             } else {
-                logger.info("Ignored older or same time update for " + status.getUsername());
+                log.info("Ignored older or same time update for " + status.getUsername());
             }
         } else {
             // simply add new status if it doesn't exist yet
             statuses.add(status);
-            logger.info("Created new status for " + status.getUsername());
+            log.info("Created new status for " + status.getUsername());
         }
-        logger.info(status.getUsername() + " " + status.getStatusText() + " " + status.getTime());
+        log.info(status.getUsername() + " " + status.getStatusText() + " " + status.getTime());
         return status;
     }
 
@@ -64,11 +51,11 @@ public class StatusRepository {
         Optional<Status> status = findStatusByUsername(username);
         if (status.isPresent()) {
             // if the Optional contains a Status
-            logger.info("Found status for username " + username);
+            log.info("Found status for username " + username);
             return status.get();
         } else {
             // if the Optional is empty
-            logger.info("Status not found for username " + username);
+            log.info("Status not found for username " + username);
             return null;
         }
     }
@@ -79,10 +66,10 @@ public class StatusRepository {
      */
     public List<Status> getStatuses() {
         if (!this.statuses.isEmpty()) {
-            logger.info("Statuses available");
+            log.info("Statuses available");
             return this.statuses;
         }
-        logger.info("Could not get statuses - there are no statuses available!");
+        log.info("Could not get statuses - there are no statuses available!");
         return null;
     }
 
@@ -105,9 +92,9 @@ public class StatusRepository {
         findStatusByUsername(username).ifPresentOrElse(
                 status -> {
                     statuses.remove(status);
-                    logger.info("Successfully deleted status for username " + username);
+                    log.info("Successfully deleted status for username " + username);
                 },
-                () -> logger.info("Failed to delete status: No status found for username " + username)
+                () -> log.info("Failed to delete status: No status found for username " + username)
         );
     }
 
