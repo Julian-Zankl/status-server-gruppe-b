@@ -29,6 +29,7 @@ services:
     image: node
     environment:
       - service-registry.route=service-registry:8761
+      - api-gateway.route=api-gateway:8080
       - rabbitmq.route=rabbitmq
     depends_on:
       service-registry:

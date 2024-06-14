@@ -12,6 +12,9 @@ spring:
     password: pw
     username: user
 
+api-gateway:
+  route: localhost:8080
+
 service-registry:
   route: localhost:8761
 
