@@ -51,6 +51,7 @@ public class StatusRepository {
             statuses.add(status);
             logger.info("Created new status for " + status.getUsername());
         }
+        logger.info(status.getUsername() + " " + status.getStatusText() + " " + status.getTime());
         return status;
     }
 
@@ -106,7 +107,7 @@ public class StatusRepository {
                     statuses.remove(status);
                     logger.info("Successfully deleted status for username " + username);
                 },
-                () -> logger.warn("Failed to delete status: No status found for username " + username)
+                () -> logger.info("Failed to delete status: No status found for username " + username)
         );
     }
 

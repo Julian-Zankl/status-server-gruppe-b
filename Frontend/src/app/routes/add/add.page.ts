@@ -45,13 +45,14 @@ export class StatusAddPage {
     const status: StatusDto = {
       username: this.addStatusForm.value.user ?? '',
       statusText: this.addStatusForm.value.status ?? '',
-      time: moment().toISOString().slice(0, 19)
+      time: moment().format('YYYY-MM-DDTHH:mm:ss')
     }
 
     firstValueFrom(this.http.post('/api/statuses', status)).then(() => {
-      this.snackBar.open('Status wurde erfolgreich hinzugefügt', 'Schließen');
+      console.log(status)
+      this.snackBar.open('Status wurde erfolgreich hinzugefügt!', 'Schließen');
     }).catch(() => {
-      this.snackBar.open('Fehler beim Hinzufügen des Status', 'Schließen')
+      this.snackBar.open('Fehler beim Hinzufügen des Status.', 'Schließen')
     });
   }
 }

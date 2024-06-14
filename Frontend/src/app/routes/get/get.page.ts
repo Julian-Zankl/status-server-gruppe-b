@@ -7,6 +7,11 @@ import {HttpClient} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {StatusDto} from "../../shared/dtos/status.dto";
 import {firstValueFrom} from "rxjs";
+import {default as _rollupMoment} from "moment/moment";
+import * as _moment from "moment/moment";
+
+const moment = _rollupMoment || _moment;
+moment.locale('de');
 
 @Component({
   selector: 'app-status-get',
@@ -41,7 +46,7 @@ export class StatusGetPage {
     }
 
     firstValueFrom(this.http.get<StatusDto>(`/api/statuses/${status.username}`)).then((res: StatusDto) => {
-      this.snackBar.open(`${res.username} - ${res.statusText} - ${res.time}`, 'Schließen');
+      this.snackBar.open(`${res.username} - ${res.statusText} - ${moment(res.time).format('MMMM Do YYYY, h:mm:ss')}`, 'Schließen');
     }).catch(() => {
       this.snackBar.open('Fehler beim Abfragen des Status', 'Schließen')
     });
