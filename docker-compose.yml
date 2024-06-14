@@ -1,6 +1,8 @@
 services:
   service-registry:
     image: service-registry
+    ports:
+      - "8761:8761"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
       interval: 10s
@@ -51,7 +53,7 @@ services:
     image: rabbitmq:management
     ports:
       - "5672:5672"
-      - "15672:15672" # management
+      - "15672:15672" # FE
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=pw

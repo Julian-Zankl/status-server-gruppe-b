@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,35 +61,25 @@ public class RabbitMQConfig {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory(url);
         connectionFactory.setUsername("user");
         connectionFactory.setPassword("pw");
+        connectionFactory.setPublisherReturns(true);
+        connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
         return connectionFactory;
     }
 
     /**
      * Create a message listener container.
      * @param connectionFactory Connection factory
-     * @param listenerAdapter Listener adapter
+     * @param receiverService Receiver service
      * @return Message listener container
      */
     @Bean
-    public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+    public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageReceiverService receiverService) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.setQueues(createNodeQueue());
-        container.setMessageListener(listenerAdapter);
+        container.setMessageListener(receiverService);
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return container;
-    }
-
-    /**
-     * Create a message listener adapter.
-     * @param messageReceiverService Message receiver service
-     * @param messageConverter Message converter
-     * @return Message listener adapter
-     */
-    @Bean
-    public MessageListenerAdapter listenerAdapter(MessageReceiverService messageReceiverService, MessageConverter messageConverter) {
-        MessageListenerAdapter adapter = new MessageListenerAdapter(messageReceiverService, "receiveMessage");
-        adapter.setMessageConverter(messageConverter);
-        return adapter;
     }
 
     /**
@@ -113,6 +102,8 @@ public class RabbitMQConfig {
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(messageConverter);
+        template.setMandatory(true);
+
         return template;
     }
 }

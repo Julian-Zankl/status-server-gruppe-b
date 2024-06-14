@@ -1,7 +1,10 @@
 package at.fhburgenland.node.repository;
 
 import at.fhburgenland.node.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.Optional;
 @Repository
 public class StatusRepository {
     private final List<Status> statuses = new ArrayList<>();
+    private static final Logger logger = LoggerFactory.getLogger(StatusRepository.class);
 
     /**
      * Constructor to initialize some dummy data.
@@ -38,14 +42,14 @@ public class StatusRepository {
             if (status.getTime().isAfter(existingStatus.get().getTime())) {
                 statuses.remove(existingStatus.get());
                 statuses.add(status);
-                System.out.println("Updated status with more recent data for " + status.getUsername());
+                logger.info("Updated status with more recent data for " + status.getUsername());
             } else {
-                System.out.println("Ignored older or same time update for " + status.getUsername());
+                logger.info("Ignored older or same time update for " + status.getUsername());
             }
         } else {
             // simply add new status if it doesn't exist yet
             statuses.add(status);
-            System.out.println("Created new status for " + status.getUsername());
+            logger.info("Created new status for " + status.getUsername());
         }
         return status;
     }
@@ -59,11 +63,11 @@ public class StatusRepository {
         Optional<Status> status = findStatusByUsername(username);
         if (status.isPresent()) {
             // if the Optional contains a Status
-            System.out.println("Found status for username " + username);
+            logger.info("Found status for username " + username);
             return status.get();
         } else {
             // if the Optional is empty
-            System.out.println("Status not found for username " + username);
+            logger.info("Status not found for username " + username);
             return null;
         }
     }
@@ -74,15 +78,15 @@ public class StatusRepository {
      */
     public List<Status> getStatuses() {
         if (!this.statuses.isEmpty()) {
-            System.out.println("Statuses available");
+            logger.info("Statuses available");
             return this.statuses;
         }
-        System.out.println("There are no statuses available!");
+        logger.info("Could not get statuses - there are no statuses available!");
         return null;
     }
 
     /**
-     * Update status for a given status
+     * Update existing status
      * @param status Status to update
      * @return Updated status
      */
@@ -97,7 +101,13 @@ public class StatusRepository {
     public void deleteStatus(String username) {
         // statuses::remove is a method reference to the remove method of the `statuses` list
         // could be written as `s -> statuses.remove(s)` as well
-        findStatusByUsername(username).ifPresent(statuses::remove);
+        findStatusByUsername(username).ifPresentOrElse(
+                status -> {
+                    statuses.remove(status);
+                    logger.info("Successfully deleted status for username " + username);
+                },
+                () -> logger.warn("Failed to delete status: No status found for username " + username)
+        );
     }
 
     /**
