@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Repository for status. This class is used to manage the status data.
+ * Repository for status operations (CRUD)
  */
 @Repository
 public class StatusRepository {
@@ -18,7 +19,7 @@ public class StatusRepository {
     private static final Logger logger = LoggerFactory.getLogger(StatusRepository.class);
 
     /**
-     * Constructor to create some initial statuses
+     * Constructor to initialize some dummy data.
      */
     public StatusRepository() {
         this.statuses.add(new Status("Max", "idle", LocalDateTime.now().minusHours(1)));
@@ -29,37 +30,46 @@ public class StatusRepository {
     }
 
     /**
-     * Create new status
-     * @param status Status to be created
-     * @return Created status
+     * Create new status or update existing status if more recent
+     * @param status Status to create or update
+     * @return Created or updated status
      */
     public Status createStatus(Status status) {
-        if (!statuses.contains(status)) {
+        // Optional<Status> is used to avoid explicit null checks
+        Optional<Status> existingStatus = findStatusByUsername(status.getUsername());
+        if (existingStatus.isPresent()) {
+            // check if incoming status is more recent
+            if (status.getTime().isAfter(existingStatus.get().getTime())) {
+                statuses.remove(existingStatus.get());
+                statuses.add(status);
+                logger.info("Updated status with more recent data for " + status.getUsername());
+            } else {
+                logger.info("Ignored older or same time update for " + status.getUsername());
+            }
+        } else {
+            // simply add new status if it doesn't exist yet
             statuses.add(status);
-            logger.info("Created status with username {}", status.getUsername());
-            return statuses.getLast();
+            logger.info("Created new status for " + status.getUsername());
         }
-        logger.info("State does already exist!");
-        return null;
+        return status;
     }
 
     /**
-     * Get one specific status
-     * @param username Access-ID of corresponding status
-     * @return Retrieved status
+     * Get status by username
+     * @param username Username to search for
+     * @return Status object or null if not found
      */
     public Status getStatusByName(String username) {
-        if (!statuses.isEmpty()) {
-            for (Status status : statuses) {
-                if (status.getUsername().equals(username)) {
-                    logger.info("Found status with name {}", status.getUsername());
-                    return status;
-                }
-            }
-            logger.info("Could not get by name - no status with name {}", username);
+        Optional<Status> status = findStatusByUsername(username);
+        if (status.isPresent()) {
+            // if the Optional contains a Status
+            logger.info("Found status for username " + username);
+            return status.get();
+        } else {
+            // if the Optional is empty
+            logger.info("Status not found for username " + username);
+            return null;
         }
-        logger.info("There are no statuses available");
-        return null;
     }
 
     /**
@@ -67,9 +77,9 @@ public class StatusRepository {
      * @return List of all statuses
      */
     public List<Status> getStatuses() {
-        if (!statuses.isEmpty()) {
+        if (!this.statuses.isEmpty()) {
             logger.info("Statuses available");
-            return statuses;
+            return this.statuses;
         }
         logger.info("Could not get statuses - there are no statuses available!");
         return null;
@@ -77,41 +87,37 @@ public class StatusRepository {
 
     /**
      * Update existing status
-     * @param status Status to be updated
+     * @param status Status to update
      * @return Updated status
      */
-    public Status updateStatus(Status status, String username) {
-        if (!statuses.isEmpty()) {
-            for (int i = 0; i < statuses.size(); i++) {
-                if (statuses.get(i).getUsername().equals(username)) {
-                    statuses.set(i, status);
-                    logger.info("Updated status with username " + status.getUsername());
-                    return statuses.get(i);
-                }
-            }
-            logger.info("Could not update status - no status with name {}", username);
-        }
-        logger.info("Could not update status - there are no statuses available!");
-        return null;
+    public Status updateStatus(Status status) {
+        return createStatus(status);  // redirect update requests through createStatus() to leverage the LWW logic
     }
 
     /**
-     * Delete existing status
-     * @param username Access-ID of corresponding status
+     * Delete status for a given username
+     * @param username Username to delete status for
      */
     public void deleteStatus(String username) {
-        if (!statuses.isEmpty()) {
-            for (Status status : statuses) {
-                if (status.getUsername().equals(username)) {
+        // statuses::remove is a method reference to the remove method of the `statuses` list
+        // could be written as `s -> statuses.remove(s)` as well
+        findStatusByUsername(username).ifPresentOrElse(
+                status -> {
                     statuses.remove(status);
-                    logger.info("Deleted status with username {}", status.getUsername());
-                    return;
-                } else {
-                    logger.info("Could not delete status - status does not exist!");
-                }
-            }
-        } else {
-            logger.info("Could not delete status - there are no statuses available!");
-        }
+                    logger.info("Successfully deleted status for username " + username);
+                },
+                () -> logger.warn("Failed to delete status: No status found for username " + username)
+        );
+    }
+
+    /**
+     * Find the most recent status for a given username
+     * @param username Username to search for
+     * @return Most recent status or empty Optional if not found
+     */
+    private Optional<Status> findStatusByUsername(String username) {
+        // iterate over all statuses and filter by username
+        return statuses.stream()
+                .filter(s -> s.getUsername().equals(username)).findFirst();
     }
 }

@@ -55,7 +55,7 @@ public class StatusService {
      * @return Updated status
      */
     public Status updateStatus(Status status, String username) {
-        return this.statusRepository.updateStatus(status, username);
+        return this.statusRepository.updateStatus(status);
     }
 
     /**
