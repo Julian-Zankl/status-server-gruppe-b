@@ -41,12 +41,10 @@ public class StartupRunner implements ApplicationRunner {
         try {
             if(retries > 0) {
                 ResponseEntity<List<Status>> data = restTemplate.exchange("http://"+apiGatewayRoute+"/api/statuses",
-                        HttpMethod.GET, null, new ParameterizedTypeReference<>() {
-                        });
-
+                        HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
                 List<Status> status = data.getBody();
 
-                if(status != null) {
+                if (status != null) {
                     status.forEach(statusService::createStatus);
                 } else {
                     retries--;
