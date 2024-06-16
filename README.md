@@ -2,11 +2,11 @@
 
 ## Aufbau
 
-Für Frontend und Backend wurde jeweils ein eigenes `Dockerfile` kreiert, welches zum Bauen der Container genutzt wird.
-Zudem wurde ein `docker-compose.yml` angelegt, damit beide Applikationen mittels eines Befehls gebaut und ausgeführt werden können.
+Für das Frontend und die Nodes wurden jeweils ein eigenes `Dockerfile` kreiert, welches zum Bauen der Container genutzt wird.
+Zudem wurde ein `docker-compose.yml` angelegt, damit sämtliche Applikationen mittels eines Befehls gebaut und ausgeführt werden können.
 
 Ebenso wichtig ist die `nginx.conf`, welche die Proxy-Einstellungen für das Frontend beinhaltet.
-Sie legt auch fest, dass alle Requests mit dem Präfix `/api` an den Server weitergeleitet werden.
+Sie legt auch fest, dass alle Requests mit dem Präfix `/api` an das API-Gateway weitergeleitet werden.
 
 ## Frontend
 
@@ -15,15 +15,34 @@ Bietet eine simple Navigation via einer Sidenav, welche sämtliche CRUD-Befehle 
 
 Port: `4200`
 
-## Backend
+## Node
 
 Wurde auf Basis von Spring Boot (Java) implementiert.
 Bietet einfache CRUD-Befehle für den Umgang von Benutzerstatus.
 
+Port: `8089`
+
+## API Gateway
+
 Port: `8080`
+
+## Service Registry
+
+Port: `8761`
+
+## RabbitMQ
+
+Port: `15672`
 
 ## Start der Applikation
 
-Mittels `docker-compose up` können beide Projekte als Docker Container ausgeführt werden.
-So wird für beide Applikationen jeweils ein Docker Container erstellt, die miteinander kommunizieren können.
-Sollen die Docker Images neu gebaut werden muss man `docker-compose up --build` verwenden.
+Mittels `docker-compose up` können sämtliche Applikationen als Docker Container gestartet werden.
+
+## Skalierung mehrerer Instanzen (Nodes)
+
+Mithilfe des Batch-Skripts `start_cluster.bat` können mehrere Nodes erzeugt werden.
+Hierbei kann innerhalb des Skripts die Anzahl der Nodes definiert werden → z.B. `--scale node=2`
+
+## Stopp der Applikation
+
+Mithilfe des Batch-Skripts `stop_cluster.bat` werden alle Docker Container beendet.
