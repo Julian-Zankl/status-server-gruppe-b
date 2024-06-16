@@ -8,7 +8,7 @@
 		<version>3.1.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>at.fhbugenland</groupId>
+	<groupId>at.fhburgenland</groupId>
 	<artifactId>service_registry</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>service_registry</name>
