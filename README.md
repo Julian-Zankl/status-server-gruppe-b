@@ -41,6 +41,10 @@ Port: `15672`
 ## Start der Applikation
 Mittels `docker-compose up` können sämtliche Applikationen als Docker Container gestartet werden.
 Die Docker Images werden von Docker-Hub geladen.
+Falls es Fehler beim Laden der Images gibt, können die Images auch lokal gebaut werden.
+Dafür muss das ganze Projekt davor mittels `mvn clean install` gebaut werden. 
+Danach kann der Befehl `docker compose -f docker-compose-build.yml up --build --scale node=3` ausgeführt werden.
+
 
 ## Skalierung mehrerer Instanzen (Nodes)
 

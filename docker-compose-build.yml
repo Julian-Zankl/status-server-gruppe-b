@@ -8,6 +8,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    build:
+      context: ./Backend/service_registry
+      dockerfile: ../Dockerfile
 
   api-gateway:
     image: markusf01/tevs-gateway
@@ -18,6 +21,9 @@ services:
     depends_on:
       service-registry:
         condition: service_healthy
+    build:
+      context: ./Backend/gateway
+      dockerfile: ../Dockerfile
 
   node:
     image: markusf01/tevs-node
@@ -30,6 +36,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_started
+    build:
+      context: ./Backend/node
+      dockerfile: ./Dockerfile
 
   status-client:
     image: markusf01/tevs-status-client
@@ -38,6 +47,8 @@ services:
     depends_on:
       api-gateway:
         condition: service_started
+    build:
+      context: ./Frontend
 
   rabbitmq:
     image: rabbitmq:management
