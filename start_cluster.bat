@@ -1,2 +1,2 @@
 @echo off
-docker compose -f docker-compose.yml up --build --scale node=3
+docker compose -f docker-compose.yml up --scale node=3

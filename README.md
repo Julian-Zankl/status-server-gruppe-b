@@ -20,9 +20,12 @@ Port: `4200`
 Wurde auf Basis von Spring Boot (Java) implementiert.
 Bietet einfache CRUD-Befehle für den Umgang von Benutzerstatus.
 
-Port: `8089`
+Sind über das API-Gateway erreichbar mit `/api/statuses`
 
 ## API Gateway
+Es leitet die Anfragen an die entsprechenden Services weiter. 
+Sicherheitsanforderungen könnten hier dann leicht implementiert werden, 
+da die Services nur durch dieses ansprechbar sind.
 
 Port: `8080`
 
@@ -31,12 +34,13 @@ Port: `8080`
 Port: `8761`
 
 ## RabbitMQ
+Es wird nur der Frontend-Port gemappt, die Nodes kommunizieren mit der API über ein Docker-Network.
 
 Port: `15672`
 
 ## Start der Applikation
-
 Mittels `docker-compose up` können sämtliche Applikationen als Docker Container gestartet werden.
+Die Docker Images werden von Docker-Hub geladen.
 
 ## Skalierung mehrerer Instanzen (Nodes)
 

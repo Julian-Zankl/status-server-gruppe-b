@@ -1,6 +1,8 @@
 services:
   service-registry:
-    image: service-registry
+    image: markusf01/tevs-registry
+    ports:
+      - "8761:8761"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
       interval: 10s
@@ -11,7 +13,7 @@ services:
       dockerfile: ../Dockerfile
 
   api-gateway:
-    image: api-gateway
+    image: markusf01/tevs-gateway
     ports:
       - "8080:8080"
     environment:
@@ -24,7 +26,7 @@ services:
       dockerfile: ../Dockerfile
 
   node:
-    image: node
+    image: markusf01/tevs-node
     environment:
       - service-registry.route=service-registry:8761
       - api-gateway.route=api-gateway:8080
@@ -39,7 +41,7 @@ services:
       dockerfile: ./Dockerfile
 
   status-client:
-    image: status-client
+    image: markusf01/tevs-status-client
     ports:
       - "4200:80"
     depends_on:
